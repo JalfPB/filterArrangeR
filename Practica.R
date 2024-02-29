@@ -51,3 +51,63 @@ glimpse(censoEdad)
 censoEdad %>% 
   rename(edad = age) %>% 
   names()
+
+#Crear columna de edad tipo character
+
+censoEdad$edad_char <- as.character(censoEdad$age)
+typeof(censoEdad$edad_char)
+
+#Cambiar variables por una constante
+
+censoHoras40 <- censo %>% 
+  mutate(hours.per.week = 40)
+
+censoHoras40 %>% 
+  select(hours.per.week) %>% 
+  head()
+
+#Aplicar transformacion a variable existente
+
+censoHoras40 <- censoHoras40 %>% 
+  mutate(hours.per.week.nueva = hours.per.week - 1)
+
+censoHoras40 %>% 
+  select(starts_with("hours")) %>% 
+  head
+
+#Cambiar tipo de variable de variable existente
+
+censoNuevo <- censoHoras40 %>% 
+  mutate(hours.per.week = as.character(hours.per.week))
+
+censoNuevo %>% 
+  select(hours.per.week.nueva, hours.per.week) %>% 
+  glimpse()
+
+#Recodificar los items
+
+censoMutado <- censo %>% 
+mutate(income = recode(income,
+                        `>50K` = 'Mas50k', # `old value` = new value
+                       `<=50K` = 'Menos50k'))
+table(censoMutado$income, censo$income)
+
+#Recodificar con case_match
+
+censoMutadoNuevo <- censo %>% 
+  mutate(income = case_match(income,
+                             ">50K" ~ 'Mas50k', # `old value` = new value
+                             "<=50K" ~ 'Menos50k')) # `old value` = new value~
+table(censoMutadoNuevo$income, censo$income)
+
+#Recodificar con case_match dejando los valores no especificados intactos
+
+censoMutadoNuevo2 <- censo %>% 
+  mutate(income = case_match(income,
+                             ">50K" ~ 'Mas50k', # `old value` = new value
+                             "<=50K" ~ 'Menos50k',
+                             .default = income)) # `old value` = new value~
+table(censoMutadoNuevo2$income, censo$income)
+
+
+
